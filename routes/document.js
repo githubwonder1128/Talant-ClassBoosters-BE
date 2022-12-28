@@ -27,5 +27,6 @@ var upload = multer({
 router.post("/", upload.array('files[]'),postDocument);
 router.get("/", getDocuments);
 router.post("/read",readDocuments);
+router.get("/test", (req,res) => res.json("This is Test"))
 
 export default router;
