@@ -1,5 +1,0 @@
-# Custom Headers must be nested inside a top-level customHeaders key
- Cors:
-      AllowOrigin: "'https://www.classboosters.com/'"
-      AllowHeaders: "'Content-Type'"
-      AllowMethods: "'GET,POST'"
