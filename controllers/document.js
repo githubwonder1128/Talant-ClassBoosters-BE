@@ -1,17 +1,7 @@
-import libre, { convert } from 'libreoffice-convert';
-import path from "path";
-import fsp from 'fs/promises';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import util from "util";
 
 import Course from '../modals/Course.js';
 import Document from '../modals/Document.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-libre.convertAsync = util.promisify(libre.convert);
 
 export const postDocument = async (req, res) => {
     try {
@@ -69,19 +59,5 @@ export const readDocuments = async (req, res) => {
         res.json({ data: fileName, extension, courseName, departmentName, universityName })
     } catch (error) {
         console.log(error);
-    }
-}
-
-async function ConvertDocToPdf(input, output) {
-    try {
-        const inputPath = path.join(__dirname, "../public/"+"test.docx");
-        const outputPath = path.join(__dirname, "../public/"+"temp.pdf");
-        console.log(inputPath);
-        let docData = await fsp.readFile(inputPath)
-        console.log("-----99")
-        let pdfBuf = await libre.convertAsync(docData, ".pdf", undefined);
-        fsp.writeFileSync(outputPath, pdfBuf);
-    } catch (err) {
-        console.log("Error in input reading", err);
     }
 }

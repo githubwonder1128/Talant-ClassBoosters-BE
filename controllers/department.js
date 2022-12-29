@@ -1,8 +1,4 @@
-import mongoose from 'mongoose';
-import Course from '../modals/Course.js';
 import Department from '../modals/Department.js';
-import University from '../modals/University.js';
-import Document from '../modals/Document.js';
 
 export const postDepartment = async (req, res) => {
     try {
