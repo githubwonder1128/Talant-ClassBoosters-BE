@@ -1,7 +1,9 @@
+import https from "https";
 import express from 'express';
 import mongoose from 'mongoose';
 import bodyParser from "body-parser";
 import cors from 'cors';
+import fs from "fs";
 import { setting } from './config/keys.js';
 import university from './routes/university.js';
 import department from './routes/department.js';
@@ -30,6 +32,6 @@ app.use('/api/department', department);
 app.use('/api/course', course);
 app.use('/api/document', document)
 
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 443;
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
