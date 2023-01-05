@@ -10,8 +10,14 @@ export const postUniversity = async (req, res) => {
             city,
             state
         };
-        const options = { upsert: true, new: true, setDefaultsOnInsert: true, useFindAndModify: false };
-        await University.findOneAndUpdate(query, university_update, options);
+        console.log(id);
+        if (!id) {
+            const newUniversity = new University(university_update);
+            await newUniversity.save();
+        }else{
+            //update
+            await University.findOneAndUpdate(query, university_update);
+        }
         res.json({ success: true })
     } catch (error) {
         res.status(500).json({ success: false })
