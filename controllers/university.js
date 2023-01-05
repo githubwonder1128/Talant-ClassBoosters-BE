@@ -2,12 +2,25 @@ import University from '../modals/University.js';
 
 export const postUniversity = async (req, res) => {
     try {
-        const { title, location } = req.body;
-        const newUniversity = new University({ title, location });
-        await newUniversity.save();
+        const { name, country, city, state, id } = req.body;
+        const query = { _id: id };
+        const university_update = {
+            name,
+            country,
+            city,
+            state
+        };
+        console.log(id);
+        if (!id) {
+            const newUniversity = new University(university_update);
+            await newUniversity.save();
+        }else{
+            //update
+            await University.findOneAndUpdate(query, university_update);
+        }
         res.json({ success: true })
     } catch (error) {
-        res.json({ success: false })
+        res.status(500).json({ success: false })
     }
 }
 
@@ -16,6 +29,17 @@ export const getUniversity = async (req,res) => {
         const universities = await University.find({});
         res.json({ success: true, data: universities })
     } catch (error) {
-        res.json({ success: false });
+        res.status(500).json({ success: false });
+    }
+}
+
+export const deleteUniversity = async (req, res) => {
+    try {
+        const { id } = req.params;
+        console.log(id);
+        await University.deleteOne({ _id: id });
+        return res.json({ success: true })
+    } catch (error) {
+        return res.status(500).json({ success: false })
     }
 }

@@ -9,6 +9,8 @@ import university from './routes/university.js';
 import department from './routes/department.js';
 import course from './routes/course.js';
 import document from './routes/document.js';
+import auth from './routes/auth.js';
+import notifications from './routes/notifications.js';
 
 const app = express();
 const { mongoURI } = setting;
@@ -30,7 +32,9 @@ app.use('/public', express.static('public'));
 app.use('/api/university', university);
 app.use('/api/department', department);
 app.use('/api/course', course);
-app.use('/api/document', document)
+app.use('/api/document', document);
+app.use("/api/auth",auth);
+app.use("/api/notifications",notifications)
 
 const port = process.env.PORT || 5000;
 
