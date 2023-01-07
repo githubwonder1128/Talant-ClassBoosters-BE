@@ -62,8 +62,8 @@ export const accessToken = async (req, res) => {
         const user = await User.findOne({ email });
 
         const payload = { email: user.email, displayName: user.displayName };
-        const updateToken = await jwt.sign(payload, secretOrKey, { expiresIn: 3600 });
-        return res.json({ success: true, access_token: updateToken });
+        const [token, err] = await jwt.sign(payload, secretOrKey, { expiresIn: 3600 });
+        return res.json({ success: true, access_token: token, user });
     } catch (error) {
         
     }
