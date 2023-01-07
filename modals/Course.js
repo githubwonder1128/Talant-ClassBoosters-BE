@@ -5,7 +5,7 @@ const CourseSchema = new Schema({
     name: {
         type: String
     },
-    title: {
+    code: {
         type: String
     },
     description: {
@@ -14,10 +14,6 @@ const CourseSchema = new Schema({
     level: {
         type: String
     },
-    updated: {
-        type: Date,
-        default: Date.now()
-    },
     department: {
         type: mongoose.Types.ObjectId,
         ref: "departments"
@@ -25,9 +21,6 @@ const CourseSchema = new Schema({
     university: {
         type: mongoose.Types.ObjectId,
         ref: "universitys"
-    },
-    uploaderName: {
-        type: String
     }
 
 })

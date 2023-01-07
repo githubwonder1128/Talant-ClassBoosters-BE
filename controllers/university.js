@@ -10,17 +10,24 @@ export const postUniversity = async (req, res) => {
             city,
             state
         };
-        console.log(id);
+        let message = "";
+        const isExist = await University.find({ name, country, city, state });
+        if (isExist.length > 0) {
+            message = "Already Exist";
+            return res.json({ success: false, message});
+        }
         if (!id) {
+            message = "Successfully Uploaded";
             const newUniversity = new University(university_update);
             await newUniversity.save();
         }else{
             //update
+            message = "Successfully Updated"
             await University.findOneAndUpdate(query, university_update);
         }
-        res.json({ success: true })
+        res.json({ success: true, message })
     } catch (error) {
-        res.status(500).json({ success: false })
+        res.status(500).json({ success: false, message: "Failed" })
     }
 }
 
@@ -36,10 +43,10 @@ export const getUniversity = async (req,res) => {
 export const deleteUniversity = async (req, res) => {
     try {
         const { id } = req.params;
-        console.log(id);
+        let message = "Successfully Deleted";
         await University.deleteOne({ _id: id });
-        return res.json({ success: true })
+        return res.json({ success: true, message })
     } catch (error) {
-        return res.status(500).json({ success: false })
+        return res.status(500).json({ success: false, message: "Failed" })
     }
 }
