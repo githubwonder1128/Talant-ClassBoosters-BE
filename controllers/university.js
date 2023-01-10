@@ -18,6 +18,7 @@ AWS.config.update({
 
 export const postUniversity = async (req, res) => {
     try {
+        console.log(process.env.AWS_S3_ACCESS_KEY_ID)
         const { name, country, city, state, id } = req.body;
         const query = { _id: id };
         const university_update = {
