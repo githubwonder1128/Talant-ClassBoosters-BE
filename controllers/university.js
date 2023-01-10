@@ -3,15 +3,19 @@ import University from '../modals/University.js';
 import AWS from 'aws-sdk';
 import moment from "moment";
 
+// const s3 = new AWS.S3();
+
+// AWS.config.loadFromPath("./aws/credential.json");
+
 const s3 = new AWS.S3({
     region: 'us-east-2',
     accessKeyId:  process.env.AWS_S3_ACCESS_KEY_ID,
     secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
 });
 
-
 export const postUniversity = async (req, res) => {
     try {
+        console.log(process.env.AWS_S3_ACCESS_KEY_ID)
         const { name, country, city, state, id } = req.body;
         const query = { _id: id };
         const university_update = {
@@ -43,6 +47,7 @@ export const postUniversity = async (req, res) => {
         }
         res.json({ success: true, message })
     } catch (error) {
+        console.log(error)
         res.status(500).json({ success: false, message: "Failed" })
     }
 }
