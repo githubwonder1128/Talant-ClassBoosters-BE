@@ -9,6 +9,12 @@ const s3 = new AWS.S3({
     secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
 });
 
+AWS.config.update({
+    region: 'us-east-2',
+    accessKeyId:  process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
+})
+
 
 export const postUniversity = async (req, res) => {
     try {
