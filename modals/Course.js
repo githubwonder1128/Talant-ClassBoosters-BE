@@ -21,6 +21,13 @@ const CourseSchema = new Schema({
     university: {
         type: mongoose.Types.ObjectId,
         ref: "universitys"
+    },
+    upload_date: {
+        type: Date,
+        default: Date.now()
+    },
+    folder_name: {
+        type: String
     }
 
 })

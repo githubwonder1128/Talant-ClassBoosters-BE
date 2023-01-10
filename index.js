@@ -10,8 +10,12 @@ import department from './routes/department.js';
 import course from './routes/course.js';
 import document from './routes/document.js';
 import auth from './routes/auth.js';
+import upload from "express-fileupload";
 import notifications from './routes/notifications.js';
 
+import dotenv from "dotenv";
+
+dotenv.config();
 const app = express();
 const { mongoURI } = setting;
 
@@ -19,6 +23,10 @@ app.use(cors());
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: true,limit: '50mb' }));
 app.use(bodyParser.json({limit: '50mb'}));
+
+// using upload middleware
+app.use(upload());
+app.use(express.json());
 
 mongoose
   .connect(

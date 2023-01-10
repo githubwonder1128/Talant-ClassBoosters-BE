@@ -14,6 +14,14 @@ const DocumentSchema = new Schema({
     approved: {
         type: Boolean
     },
+    university: {
+        type: mongoose.Types.ObjectId,
+        ref: "universitys"
+    },
+    department:{
+        type: mongoose.Types.ObjectId,
+        ref: "departments"
+    },
     course: {
         type: mongoose.Types.ObjectId,
         ref: "courses"
@@ -21,12 +29,13 @@ const DocumentSchema = new Schema({
     fileName: {
         type: String
     },
-    preview: {
-        type: String
-    },
     extension: {
         type: String
-    }
+    },
+    upload_date: {
+        type: Date,
+        default: Date.now()
+    },
 })
 
 export default mongoose.model("documents", DocumentSchema);

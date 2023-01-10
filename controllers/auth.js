@@ -68,3 +68,34 @@ export const accessToken = async (req, res) => {
         
     }
 }
+
+export const updateUser = async (req, res) => {
+    try {
+        const { user } = req.body;
+        const { id, email, password, name } = user;
+        const IsExist = await User.find({ _id: { $ne: id},email });
+        if (IsExist.length > 0) {
+            return res.json({ success: false, message: "email is exist."});
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashPassword = await bcrypt.hash(password, salt);
+
+        const updateUser = {
+            email,
+            password,
+            displayName: name,
+            password: hashPassword
+        }
+
+        const payload = { email, displayName: name };
+        const [token, err] = await jwt.sign(payload,secretOrKey, { expiresIn: 3600 });
+
+        await User.findByIdAndUpdate(id, updateUser);
+        const cloneUser = await User.findById(id);
+
+        return res.json({ success: true, message: "successfully updated!", user: cloneUser, access_token: token});
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ success: false, message: "Failed"});
+    }
+}
