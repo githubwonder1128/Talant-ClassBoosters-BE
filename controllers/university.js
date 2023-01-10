@@ -1,4 +1,14 @@
+
 import University from '../modals/University.js';
+import AWS from 'aws-sdk';
+import moment from "moment";
+
+const s3 = new AWS.S3({
+    region: 'us-east-2',
+    accessKeyId:  process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
+});
+
 
 export const postUniversity = async (req, res) => {
     try {
@@ -8,7 +18,8 @@ export const postUniversity = async (req, res) => {
             name,
             country,
             city,
-            state
+            state,
+            upload_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
         };
         let message = "";
         const isExist = await University.find({ name, country, city, state });
@@ -17,9 +28,14 @@ export const postUniversity = async (req, res) => {
             return res.json({ success: false, message});
         }
         if (!id) {
+            
             message = "Successfully Uploaded";
-            const newUniversity = new University(university_update);
-            await newUniversity.save();
+            const newUniversity = new University({...university_update, folder_name: name});
+            const { _id } = await newUniversity.save();
+            await s3.putObject({
+                Key: `${name}-${_id}/`, // This should create an empty object in which we can store files 
+                Bucket: `${process.env.AWS_S3_BUCKET_NAME}`,
+            }).promise();
         }else{
             //update
             message = "Successfully Updated"
@@ -33,7 +49,7 @@ export const postUniversity = async (req, res) => {
 
 export const getUniversity = async (req,res) => {
     try {
-        const universities = await University.find({});
+        const universities = await University.find({}).sort({ upload_date : -1});
         res.json({ success: true, data: universities })
     } catch (error) {
         res.status(500).json({ success: false });
@@ -44,9 +60,9 @@ export const deleteUniversity = async (req, res) => {
     try {
         const { id } = req.params;
         let message = "Successfully Deleted";
-        await University.deleteOne({ _id: id });
-        return res.json({ success: true, message })
+        const { name } = await University.findOneAndDelete({ _id: id });
+        return res.json({ success: true, message });
     } catch (error) {
-        return res.status(500).json({ success: false, message: "Failed" })
+        return res.status(500).json({ success: false, message: "Failed" });
     }
 }

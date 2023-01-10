@@ -13,6 +13,13 @@ const UniversitySchema = new Schema({
     },
     city: {
         type: String
+    },
+    upload_date :{
+        type: Date,
+        default: Date.now()
+    },
+    folder_name: {
+        type: String
     }
 })
 

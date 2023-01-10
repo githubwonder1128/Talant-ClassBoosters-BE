@@ -8,6 +8,13 @@ const DepartmentSchema = new Schema({
     },
     department: {
         type: String
+    },
+    upload_date: {
+        type : Date,
+        default: Date.now()
+    },
+    folder_name:{
+        type: String
     }
 })
 
