@@ -43,6 +43,7 @@ export const postUniversity = async (req, res) => {
         }
         res.json({ success: true, message })
     } catch (error) {
+        console.log(error)
         res.status(500).json({ success: false, message: "Failed" })
     }
 }
