@@ -4,11 +4,8 @@ import moment from "moment";
 import University from '../modals/University.js';
 import Department from '../modals/Department.js';
 
-const s3 = new AWS.S3({
-    region: 'us-east-2',
-    accessKeyId:  process.env.AWS_S3_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
-});
+const s3 = new AWS.S3();
+AWS.config.loadFromPath("aws.json");
 
 export const postCourse = async (req, res) => {
     try {

@@ -4,7 +4,8 @@
 /node_modules
 /.pnp
 .pnp.js
-
+.env
+aws.json
 # testing
 /coverage
 
@@ -26,7 +27,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
-.env
+
 
 # vercel
 .vercel
