@@ -22,6 +22,10 @@ const CourseSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "universitys"
     },
+    status: {
+        type: Boolean,
+        default: false
+    },
     upload_date: {
         type: Date,
         default: Date.now()

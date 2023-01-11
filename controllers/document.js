@@ -5,12 +5,10 @@ import AWS from 'aws-sdk';
 import moment from "moment";
 import University from '../modals/University.js';
 import Department from "../modals/Department.js";
-const s3 = new AWS.S3({
-    region: 'us-east-2',
-    accessKeyId:  process.env.AWS_S3_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_S3_SECRET_ACCESS_KEY,
-});
 
+const s3 = new AWS.S3();
+
+AWS.config.loadFromPath("aws.json");
 
 // actual function for uploading file
 async function uploadFile(file, key) {
@@ -46,8 +44,9 @@ export const postDocument = async (req, res) => {
                 const t_university = await University.findById(university);
                 const t_department = await Department.findById(department);
                 const t_course = await Course.findById(course);
-               
-                const newDocument = new Document({ name, amount, type, approved, university, department, course, fileName, upload_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss") });
+                
+
+                const newDocument = new Document({ name, amount, type, approved, university, department, course, fileName: name, upload_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss") });
                 const { _id } = await newDocument.save();
                 const key = `${t_university.folder_name}-${university}/${t_department.folder_name}-${department}/${t_course.folder_name}-${course}/${name}-${_id}.pdf`;
                 const fileName = `${name}-${_id}.pdf`;
