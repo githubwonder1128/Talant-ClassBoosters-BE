@@ -6,7 +6,8 @@ import { setting } from '../config/keys.js';
 const { secretOrKey } = setting
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body?.data;
+        const { email, password } = req.body;
+        console.log(email, password)
         const user = await User.findOne({ email });
         if (!user) {
             return res.json({ success: false, message: "Email is not exist."});
@@ -18,15 +19,16 @@ export const login = async (req, res) => {
         }
         const payload = { email: user.email, name: user.name };
         const [token, err] = await jwt.sign(payload,secretOrKey, { expiresIn: 3600 });
-        return res.json({ success: true, message: "successfully logined!", user, access_token: token});
+        console.log(user, token);
+        return res.json({ success: true, message: "successfully logined!", user, accessToken: token});
     } catch (error) {
-        
+        console.log(error)
     }
 }
 
 export const register = async (req, res) => {
     try {
-        const { email, password, displayName } = req.body;
+        const { email, password, firstName, lastName } = req.body;
         const IsExist = await User.find({ email });
         if (IsExist.length > 0) {
             return res.json({ success: false, message: "email is exist."});
@@ -35,15 +37,16 @@ export const register = async (req, res) => {
         const hashPassword = await bcrypt.hash(password, salt);
         const newUser = new User({
             role: "admin",
-            displayName,
+            firstName,
+            lastName,
             email,
             password: hashPassword
         });
         await newUser.save();
-        const payload = { email, displayName };
+        const payload = { email, firstName, lastName };
         const [token, err] = await jwt.sign(payload,secretOrKey, { expiresIn: 3600 });
         const cloneUser = await User.findOne({ email });
-        return res.json({ success: true, message: "successfully created!", user: cloneUser, access_token: token});
+        return res.json({ success: true, message: "successfully created!", user: cloneUser, accessToken: token});
 
     } catch (error) {
         return res.json({ success: false, message: "error occured"});
@@ -52,18 +55,18 @@ export const register = async (req, res) => {
 
 export const accessToken = async (req, res) => {
     try {
-        const { access_token } = req.body.data;
+        const { accessToken } = req.body;
         //verify token
-        const [decoded, error] = await jwt.verify(access_token,secretOrKey, { expiresIn: 3600 });
+        const [decoded, error] = await jwt.verify(accessToken,secretOrKey, { expiresIn: 3600 });
         if (error) {
             return res.status(401).json({ error: "Invalid access token detected" });
         }
         const { email } = decoded;
         const user = await User.findOne({ email });
 
-        const payload = { email: user.email, displayName: user.displayName };
+        const payload = { email: user.email, firstName: user.firstName, lastName: user.lastName };
         const [token, err] = await jwt.sign(payload, secretOrKey, { expiresIn: 3600 });
-        return res.json({ success: true, access_token: token, user });
+        return res.json({ success: true, accessToken: token, user });
     } catch (error) {
         
     }
@@ -71,8 +74,7 @@ export const accessToken = async (req, res) => {
 
 export const updateUser = async (req, res) => {
     try {
-        const { user } = req.body;
-        const { id, email, password, name } = user;
+        const { id, email, password, firstName, lastName } = req.body;
         const IsExist = await User.find({ _id: { $ne: id},email });
         if (IsExist.length > 0) {
             return res.json({ success: false, message: "email is exist."});
@@ -83,17 +85,18 @@ export const updateUser = async (req, res) => {
         const updateUser = {
             email,
             password,
-            displayName: name,
+            firstName,
+            lastName,
             password: hashPassword
         }
 
-        const payload = { email, displayName: name };
+        const payload = { email, firstName, lastName };
         const [token, err] = await jwt.sign(payload,secretOrKey, { expiresIn: 3600 });
 
         await User.findByIdAndUpdate(id, updateUser);
         const cloneUser = await User.findById(id);
 
-        return res.json({ success: true, message: "successfully updated!", user: cloneUser, access_token: token});
+        return res.json({ success: true, message: "successfully updated!", user: cloneUser, accessToken: token});
     } catch (error) {
         console.log(error);
         return res.status(500).json({ success: false, message: "Failed"});
