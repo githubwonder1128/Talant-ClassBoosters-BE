@@ -3,7 +3,9 @@ import University from '../modals/University.js';
 import AWS from 'aws-sdk';
 import moment from "moment";
 
-const s3 = new AWS.S3();
+const s3 = new AWS.S3({
+    
+});
 AWS.config.loadFromPath("aws.json");
 
 
@@ -30,6 +32,7 @@ export const postUniversity = async (req, res) => {
             message = "Successfully Uploaded";
             const newUniversity = new University({...university_update, folder_name: name});
             const { _id } = await newUniversity.save();
+        
             await s3.putObject({
                 Key: `${name}-${_id}/`, // This should create an empty object in which we can store files 
                 Bucket: `${process.env.AWS_S3_BUCKET_NAME}`,
