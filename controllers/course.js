@@ -4,14 +4,23 @@ import moment from "moment";
 import University from '../modals/University.js';
 import Department from '../modals/Department.js';
 
-const s3 = new AWS.S3();
-AWS.config.loadFromPath("aws.json");
+const s3 = new AWS.S3({
+    region: "us-east-2",
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_ACCESS_KEY
+});
 
 export const postCourse = async (req, res) => {
     try {
-        const { name, code, description, level, department, university, id } = req.body;
+        const { name, code, description, level, department, university,status, id } = req.body;
         let message = "";
-        const isExist = await Course.find({ name, code, description, level, department, university });
+        let isExist = [];
+        if (!id) {
+            isExist = await Course.find({ name, code, description, level, department, university });
+        }else{
+            isExist = await Course.find({ name, code, description, level, department, university , _id : { $ne: id }});
+        }
+       
         const updated = { 
             name, 
             code, 
@@ -19,6 +28,7 @@ export const postCourse = async (req, res) => {
             level, 
             department, 
             university,
+            status,
             upload_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss") 
         }
 
@@ -27,12 +37,13 @@ export const postCourse = async (req, res) => {
         }
         if (id) {
             //edit
-            message = "Successfully Updated";
+            message = "You have successfuly updated a course.";
             await Course.findByIdAndUpdate(id, updated);
            
         }else{
             //insert
-            message = "Successfully Uploaded";
+            console.log(updated);
+            message = "You have successfuly added a course.";
             const newCourse = new Course({...updated, folder_name: name});
             const { _id } = await newCourse.save();
 
@@ -46,6 +57,7 @@ export const postCourse = async (req, res) => {
         
         res.json({ success: true,  message })
     } catch (error) {
+        console.log(error)
         res.json({ success: false, message: "Failed" });
     }
 }
@@ -62,7 +74,7 @@ export const getCourse = async (req,res) => {
 export const deletedCourse = async (req, res) => {
     try {
         const { id } = req.params;
-        let message = "Successfully Deleted";
+        let message = "You have successfuly deleted a course.";
         await Course.deleteOne({ _id: id });
         return res.json({ success: true, message })
     } catch (error) {

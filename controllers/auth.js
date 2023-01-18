@@ -10,12 +10,12 @@ export const login = async (req, res) => {
         console.log(email, password)
         const user = await User.findOne({ email });
         if (!user) {
-            return res.json({ success: false, message: "Email is not exist."});
+            return res.status(500).json({ success: false, message: "Email is not exist."});
         }
         const user_password = user.password;
         const isMatch = await bcrypt.compare(password, user_password);
         if (!isMatch) {
-            return res.json({ success: false, message: "Password isnot correct."});
+            return res.status(500).json({ success: false, message: "Password isnot correct."});
         }
         const payload = { email: user.email, name: user.name };
         const [token, err] = await jwt.sign(payload,secretOrKey, { expiresIn: 3600 });
@@ -31,7 +31,7 @@ export const register = async (req, res) => {
         const { email, password, firstName, lastName } = req.body;
         const IsExist = await User.find({ email });
         if (IsExist.length > 0) {
-            return res.json({ success: false, message: "email is exist."});
+            return res.status(500).json({ success: false, message: "email is exist."});
         }
         const salt = await bcrypt.genSalt(10);
         const hashPassword = await bcrypt.hash(password, salt);
@@ -49,7 +49,7 @@ export const register = async (req, res) => {
         return res.json({ success: true, message: "successfully created!", user: cloneUser, accessToken: token});
 
     } catch (error) {
-        return res.json({ success: false, message: "error occured"});
+        return res.status(500).json({ success: false, message: "error occured"});
     }
 }
 
