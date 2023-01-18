@@ -4,14 +4,14 @@ import AWS from 'aws-sdk';
 import moment from "moment";
 
 const s3 = new AWS.S3({
-    
+    region: "us-east-2",
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_ACCESS_KEY
 });
-AWS.config.loadFromPath("aws.json");
 
 
 export const postUniversity = async (req, res) => {
     try {
-        console.log(process.env.AWS_S3_ACCESS_KEY_ID)
         const { name, country, city, state, id } = req.body;
         const query = { _id: id };
         const university_update = {
@@ -22,14 +22,20 @@ export const postUniversity = async (req, res) => {
             upload_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss")
         };
         let message = "";
-        const isExist = await University.find({ name, country, city, state });
+
+        let isExist = [];
+        if (!id) {
+            isExist = await University.find({ name, country, city, state });
+        }else{
+            isExist = await University.find({ name, country, city, state, _id : { $ne: id } });
+        }
         if (isExist.length > 0) {
             message = "Already Exist";
             return res.json({ success: false, message});
         }
         if (!id) {
             
-            message = "Successfully Uploaded";
+            message = "You have successfuly added a university.";
             const newUniversity = new University({...university_update, folder_name: name});
             const { _id } = await newUniversity.save();
         
@@ -39,7 +45,7 @@ export const postUniversity = async (req, res) => {
             }).promise();
         }else{
             //update
-            message = "Successfully Updated"
+            message = "You have successfuly updated a university."
             await University.findOneAndUpdate(query, university_update);
         }
         res.json({ success: true, message })
@@ -61,7 +67,7 @@ export const getUniversity = async (req,res) => {
 export const deleteUniversity = async (req, res) => {
     try {
         const { id } = req.params;
-        let message = "Successfully Deleted";
+        let message = "You have successfuly deleted a university.";
         const { name } = await University.findOneAndDelete({ _id: id });
         return res.json({ success: true, message });
     } catch (error) {

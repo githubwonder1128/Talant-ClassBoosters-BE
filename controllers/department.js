@@ -3,14 +3,21 @@ import AWS from 'aws-sdk';
 import moment from "moment";
 import University from '../modals/University.js';
 
-const s3 = new AWS.S3();
-
-AWS.config.loadFromPath("aws.json");
+const s3 = new AWS.S3({
+    region: "us-east-2",
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_ACCESS_KEY
+});
 
 export const postDepartment = async (req, res) => {
     try {
         const { department, university, id } = req.body;
-        const isExist = await Department.find({ university, department });
+        let isExist = [];
+        if (!id) {
+            isExist = await Department.find({ university, department });
+        }else{
+            isExist = await Department.find({ university, department, _id : { $ne: id } });
+        }
         let message = "";
         const updated = { 
             department, 
@@ -23,12 +30,12 @@ export const postDepartment = async (req, res) => {
         if (id) {
             //edit
             await Department.findByIdAndUpdate(id, updated);
-            message = "Successfully updated";
+            message = "You have successfuly updated a department.";
         }else{
             //insert
             const newDepartment = new Department({...updated, folder_name: department});
             const { _id } = await newDepartment.save();
-            message = "Successfully uploaded";
+            message = "You have successfuly added a department.";
             const { folder_name } = await University.findById(university)
             await s3.putObject({
                 Key: `${folder_name}-${university}/${department}-${_id}/`, // This should create an empty object in which we can store files 
@@ -53,7 +60,7 @@ export const getDepartment = async (req,res) => {
 export const deleteDepartment = async (req, res) => {
     try {
         const { id } = req.params;
-        let message = "Successfully Deleted";
+        let message = "You have successfuly added a department.";
         await Department.deleteOne({ _id: id });
         return res.json({ success: true, message })
     } catch (error) {

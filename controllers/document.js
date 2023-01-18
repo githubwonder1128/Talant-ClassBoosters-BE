@@ -6,9 +6,11 @@ import moment from "moment";
 import University from '../modals/University.js';
 import Department from "../modals/Department.js";
 
-const s3 = new AWS.S3();
-
-AWS.config.loadFromPath("aws.json");
+const s3 = new AWS.S3({
+    region: "us-east-2",
+    accessKeyId: process.env.AWS_S3_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_S3_ACCESS_KEY
+});
 
 // actual function for uploading file
 async function uploadFile(file, key) {
@@ -30,7 +32,7 @@ export const postDocument = async (req, res) => {
             //edit
             const { name, amount, type, approved } = JSON.parse(document);
             await Document.findByIdAndUpdate( id, { name, amount, type, approved, upload_date: moment(new Date()).format("YYYY-MM-DD HH:mm:ss") });
-            message = "Successfully Updated";
+            message = "You have successfuly updated a document.";
         }else{
             const files = req.files.files;
             //insert
@@ -56,7 +58,7 @@ export const postDocument = async (req, res) => {
                     await uploadFile(files[i], key);
                 }
             }
-            message = "Successfully Uploaded";
+            message = "You have successfuly added a document.";
         }
         // the file when inserted from form-data comes in req.files.file
         
@@ -101,7 +103,7 @@ export const readDocuments = async (req, res) => {
 export const deleteDocument = async (req, res) => {
     try {
         const { id } = req.params;;
-        let message = "Successfully Deleted";
+        let message = "You have successfuly deleted a document.";
         const { university, department, course, fileName } = await Document.findOneAndDelete({ _id: id });
         // Delete Doc in s3
         await s3.deleteObject({ 
