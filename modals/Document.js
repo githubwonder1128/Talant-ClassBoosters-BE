@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose, { mongo } from 'mongoose';
 const Schema = mongoose.Schema;
 
 const DocumentSchema = new Schema({
@@ -26,8 +26,15 @@ const DocumentSchema = new Schema({
         type: mongoose.Types.ObjectId,
         ref: "courses"
     },
+    uploader: {
+        type: mongoose.Types.ObjectId,
+        ref: "users"
+    },
     fileName: {
         type: String
+    },
+    pages: {
+        type: Number
     },
     extension: {
         type: String

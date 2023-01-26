@@ -64,10 +64,10 @@ export const postCourse = async (req, res) => {
 
 export const getCourse = async (req,res) => {
     try {
-        const courses = await Course.find({}).sort({ upload_date: -1});
+        const courses = await Course.find({}).populate(['department','university']).sort({ upload_date: -1});
         res.json({ success: true, data: courses })
     } catch (error) {
-        res.json({ success: false });
+        res.status(500).json({ success: false });
     }
 }
 
@@ -79,5 +79,14 @@ export const deletedCourse = async (req, res) => {
         return res.json({ success: true, message })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Failed" })
+    }
+}
+
+export const getRecentCourse = async (req,res) => {
+    try {
+        const recent = await Course.find({}).populate(['department','university']).sort({ upload_date : -1}).slice(0,6);
+        res.json({ success: true ,data: recent})
+    } catch (error) {
+        res.status(500).json({ success: false })
     }
 }

@@ -50,7 +50,7 @@ export const postDepartment = async (req, res) => {
 
 export const getDepartment = async (req,res) => {
     try {
-        const departments = await Department.find({}).sort({ upload_date: -1});
+        const departments = await Department.find({}).populate(['university']).sort({ upload_date: -1});
         res.json({ success: true, data: departments })
     } catch (error) {
         res.json({ success: false });
@@ -65,5 +65,14 @@ export const deleteDepartment = async (req, res) => {
         return res.json({ success: true, message })
     } catch (error) {
         return res.status(500).json({ success: false, message: "Failed" })
+    }
+}
+
+export const getRecentDepartment = async (req, res) => {
+    try {
+        const recent = await Department.find({}).populate(['university']).sort({ upload_date: -1}).slice(0,6);
+        res.json({ success: true, data: recent })
+    } catch (error) {
+        res.status(500).json({ success: false })
     }
 }
