@@ -60,6 +60,7 @@ export const getUniversity = async (req,res) => {
         const universities = await University.find({}).sort({ upload_date : -1});
         res.json({ success: true, data: universities })
     } catch (error) {
+        console.log(error);
         res.status(500).json({ success: false });
     }
 }

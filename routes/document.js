@@ -3,7 +3,7 @@ import multer from 'multer';
 import multerS3 from 'multer-s3';
 import { v4 as uuidv4 } from 'uuid';
 import AWS from 'aws-sdk';
-import { postDocument, getDocuments, readDocuments, deleteDocument } from '../controllers/document.js'
+import { postDocument, getDocuments, readDocuments, deleteDocument, getRecentDocument } from '../controllers/document.js'
 
 const s3 = new AWS.S3();
 
@@ -20,6 +20,7 @@ const router = express.Router();
 
 router.post("/", postDocument);
 router.get("/", getDocuments);
+router.get("/recent", getRecentDocument);
 router.post("/read", readDocuments);
 router.get("/test", (req, res) => res.json("This is Test"))
 router.delete("/:id", deleteDocument)
